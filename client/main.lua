@@ -10,7 +10,9 @@ AddEventHandler('interactions:handcuff', function()
 	local playerPed = PlayerPedId()
 
 	if isHandcuffed then
-		exports.npwd:setPhoneDisabled(true)
+		if Config.npwd then 
+			exports.npwd:setPhoneDisabled(true)
+		end
 		RequestAnimDict('mp_arresting')
 		while not HasAnimDictLoaded('mp_arresting') do
 			Wait(100)
@@ -26,7 +28,9 @@ AddEventHandler('interactions:handcuff', function()
 	else
 		dragStatus.isDragged = false
 		DetachEntity(playerPed, true, false)
-		exports.npwd:setPhoneDisabled(false)
+		if Config.npwd then 
+			exports.npwd:setPhoneDisabled(false)
+		end
 		ClearPedSecondaryTask(playerPed)
 		SetEnableHandcuffs(playerPed, false)
 		DisablePlayerFiring(playerPed, false)
@@ -58,7 +62,9 @@ CreateThread(function()
 			local targetPed = GetPlayerPed(GetPlayerFromServerId(dragStatus.dragger))
 			if DoesEntityExist(targetPed) and IsPedOnFoot(targetPed) and (isHandcuffed or IsPedDeadOrDying(PlayerPedId(), true)) then
 				if not wasDragged then
-					exports.npwd:setPhoneDisabled(true)
+					if Config.npwd then 
+						exports.npwd:setPhoneDisabled(true)
+					end
 					AttachEntityToEntity(ESX.PlayerData.ped, targetPed, 11816, 0.54, 0.54, 0.0, 0.0, 0.0, 0.0, false, false, false, false, 2, true)
 					SetEntityCollision(ESX.PlayerData.ped, 1, 1)
 					wasDragged = true
@@ -69,12 +75,16 @@ CreateThread(function()
 				wasDragged = false
 				dragStatus.isDragged = false
 				DetachEntity(ESX.PlayerData.ped, true, false)
-				exports.npwd:setPhoneDisabled(false)
+				if Config.npwd then 
+					exports.npwd:setPhoneDisabled(false)
+				end
 			end
 		elseif wasDragged then
 			wasDragged = false
 			DetachEntity(ESX.PlayerData.ped, true, false)
-			exports.npwd:setPhoneDisabled(false)
+			if Config.npwd then 
+				exports.npwd:setPhoneDisabled(false)
+			end
 			
 		end	
 		Wait(1500)

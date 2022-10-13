@@ -2,6 +2,8 @@
 --A list of all the animations can be found here: https://alexguirre.github.io/animations-list/
 Config = {}
 
+Config.npwd = false  --disable npwd phone when cuffed
+
 Config.mayors = {
 	{
 		model = "a_f_y_femaleagent", --The model name. See above for the URL of the list.
