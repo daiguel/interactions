@@ -2,7 +2,7 @@
 --A list of all the animations can be found here: https://alexguirre.github.io/animations-list/
 Config = {}
 
-config.npwd = false  --disable npwd phone when cuffed
+Config.npwd = false  --disable npwd phone when cuffed
 
 Config.mayors = {
 	{
