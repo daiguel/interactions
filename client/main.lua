@@ -4,8 +4,17 @@ dragStatus.isDragged =  false
 local ox_inventory = exports.ox_inventory
 local ox_target = exports.ox_target
 
+function loadanimdict(dictname)
+	if not HasAnimDictLoaded(dictname) then
+		RequestAnimDict(dictname) 
+		while not HasAnimDictLoaded(dictname) do 
+			Citizen.Wait(1)
+		end
+	end
+end
+
 RegisterNetEvent('interactions:handcuff')-- cuff/uncuff
-AddEventHandler('interactions:handcuff', function()
+AddEventHandler('interactions:handcuff', function(playerheading, playerlocation, playerCoords)
 	isHandcuffed = not isHandcuffed
 	local playerPed = PlayerPedId()
 
@@ -13,16 +22,20 @@ AddEventHandler('interactions:handcuff', function()
 		if Config.npwd then 
 			exports.npwd:setPhoneDisabled(true)
 		end
-		RequestAnimDict('mp_arresting')
-		while not HasAnimDictLoaded('mp_arresting') do
-			Wait(100)
+		if (not IsPedDeadOrDying(playerPed, true)) then
+			local x, y, z = table.unpack(playerCoords + playerlocation * 1.0)
+			SetEntityCoords(playerPed, x, y, z)
+			SetEntityHeading(playerPed, playerheading)
+			Citizen.Wait(250)
+			loadanimdict('mp_arrest_paired')
+			TaskPlayAnim(playerPed, 'mp_arrest_paired', 'crook_p2_back_right', 8.0, -8, 3000, 2, 0, 0, 0, 0)
 		end
-
+		loadanimdict('mp_arresting')
 		TaskPlayAnim(playerPed, 'mp_arresting', 'idle', 8.0, -8, -1, 49, 0, 0, 0, 0)
 
 		SetEnableHandcuffs(playerPed, true)
 		DisablePlayerFiring(playerPed, true)
-		SetCurrentPedWeapon(playerPed, `WEAPON_UNARMED`, true) -- unarm player
+		SetCurrentPedWeapon(playerPed, `WEAPON_UNARMED`, true) --unarm player
 		SetPedCanPlayGestureAnims(playerPed, false)
 		DisplayRadar(false)
 	else
@@ -31,12 +44,22 @@ AddEventHandler('interactions:handcuff', function()
 		if Config.npwd then 
 			exports.npwd:setPhoneDisabled(false)
 		end
-		ClearPedSecondaryTask(playerPed)
+		if (not IsPedDeadOrDying(playerPed, true)) then
+			local x, y, z   = table.unpack(playerCoords + playerlocation * 1.0)
+			SetEntityCoords(playerPed, x, y, z)
+			SetEntityHeading(playerPed, playerheading)
+			Citizen.Wait(250)
+			loadanimdict('mp_arresting')
+			TaskPlayAnim(playerPed, 'mp_arresting', 'b_uncuff', 8.0, -8, 3500, 2, 0, 0, 0, 0)
+		end
 		SetEnableHandcuffs(playerPed, false)
 		DisablePlayerFiring(playerPed, false)
 		SetPedCanPlayGestureAnims(playerPed, true)
 		DisplayRadar(true)
 		RemoveAnimDict('mp_arresting')
+		RemoveAnimDict('mp_arrest_paired')
+		ClearPedTasks(playerPed)
+		ClearPedSecondaryTask(playerPed)
 	end
 end)
 
@@ -235,7 +258,13 @@ local options = {
     	{
             name = 'cuff',
             onSelect = function(data)
-                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
+				playerheading = GetEntityHeading(GetPlayerPed(-1))
+				playerlocation = GetEntityForwardVector(PlayerPedId())
+				playerCoords = GetEntityCoords(GetPlayerPed(-1))
+				loadanimdict('mp_arrest_paired')
+				TaskPlayAnim(GetPlayerPed(-1), 'mp_arrest_paired', 'cop_p2_back_right', 8.0, -8, 3000, 2, 0, 0, 0, 0)
+                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerheading, playerlocation, playerCoords)
+				RemoveAnimDict('mp_arrest_paired')
             end,
             icon = 'fa-solid fa-handcuffs',
             label = 'cuff',
@@ -247,7 +276,14 @@ local options = {
 		{
             name = 'uncaff',
             onSelect = function(data)
-                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
+				playerheading = GetEntityHeading(GetPlayerPed(-1))
+				playerlocation = GetEntityForwardVector(PlayerPedId(-1))
+				playerCoords = GetEntityCoords(GetPlayerPed(-1))
+				loadanimdict('mp_arresting')
+				TaskPlayAnim(GetPlayerPed(-1), 'mp_arresting', 'a_uncuff', 8.0, -8, 4500, 2, 0, 0, 0, 0)
+				ClearPedTasks(GetPlayerPed(-1))
+                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerheading, playerCoords, playerlocation)
+				RemoveAnimDict('mp_arrest_paired')
             end,
             icon = 'fa-solid fa-handcuffs',
             label = 'uncuff',

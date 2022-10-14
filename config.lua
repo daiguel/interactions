@@ -2,7 +2,7 @@
 --A list of all the animations can be found here: https://alexguirre.github.io/animations-list/
 Config = {}
 
-Config.npwd = false  --disable npwd phone when cuffed
+Config.npwd = false  --disable npwd phone when player is cuffed or escorted | set to true only if you use NPMD 
 
 Config.mayors = {
 	{

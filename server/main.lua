@@ -1,11 +1,11 @@
 -- cuff / uncuff
 RegisterNetEvent('interactions:handcuff') 
-AddEventHandler('interactions:handcuff', function(target)
+AddEventHandler('interactions:handcuff', function(target, playerheading, playerlocation, playerCoords)
 	local xPlayer = ESX.GetPlayerFromId(source) 
     local hasHandCuff = xPlayer.hasItem("handcuffs")
     local hasZiptie = xPlayer.hasItem("ziptie")
 	if (xPlayer.job.name == 'police') or (hasHandCuff.count > 0) or (hasZiptie.count > 0) then
-		TriggerClientEvent('interactions:handcuff', target)
+		TriggerClientEvent('interactions:handcuff', target, playerheading, playerlocation, playerCoords)
 	else
 		TriggerClientEvent('ox_lib:notify', source, {
 			type = 'error',
