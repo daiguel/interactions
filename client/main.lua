@@ -13,7 +13,7 @@ function loadanimdict(dictname)
 	end
 end
 
-RegisterNetEvent('interactions:handcuff')-- cuff/uncuff
+RegisterNetEvent('interactions:handcuff')--cuff/uncuff
 AddEventHandler('interactions:handcuff', function(playerheading, playerlocation, playerCoords)
 	isHandcuffed = not isHandcuffed
 	local playerPed = PlayerPedId()

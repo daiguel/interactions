@@ -5,13 +5,9 @@ RegisterNetEvent('interactions:cardRequested')
 AddEventHandler('interactions:cardRequested', function(item)
 	local _source = source
 	local xPlayer = ESX.GetPlayerFromId(_source)
-	local identifier = xPlayer.getIdentifier() 
-	playerInfo = xPlayer.variables
+	local identifier = xPlayer.getIdentifier()
 	local metadata = {}
-	metadata["playerInfo"] = {firstname=playerInfo.firstName,lastname=playerInfo.lastName,height=playerInfo.height,sex=playerInfo.sex,dateofbirth=playerInfo.dateofbirth}
-	metadata["identifier"] = identifier
 	local  hasLisence = true 
-
 	if item == "drivers_license" then
 		hasLisence = MySQL.scalar.await('SELECT * FROM user_licenses WHERE owner = ? and type like ?', { identifier, "drive%"})
 	elseif item=="farmlicense" then
@@ -19,6 +15,9 @@ AddEventHandler('interactions:cardRequested', function(item)
 	end
 	if hasLisence then
 		if  ox_inventory:GetItem(_source, 'money', nil, true) > 500 then
+			local playerInfo = MySQL.single.await('SELECT * FROM users WHERE identifier = ?', {identifier})
+			metadata["playerInfo"] = {firstname=playerInfo.firstname, lastname=playerInfo.lastname, height=playerInfo.height, sex=playerInfo.sex, dateofbirth=playerInfo.dateofbirth}
+			metadata["identifier"] = identifier
 			ox_inventory:AddItem(_source, item, 1, metadata, nil, function(success, reason)
 				if success then
 					TriggerClientEvent('ox_lib:notify', _source, {
