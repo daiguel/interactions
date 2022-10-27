@@ -258,13 +258,18 @@ local options = {
     	{
             name = 'cuff',
             onSelect = function(data)
-				playerheading = GetEntityHeading(GetPlayerPed(-1))
-				playerlocation = GetEntityForwardVector(PlayerPedId())
-				playerCoords = GetEntityCoords(GetPlayerPed(-1))
-				loadanimdict('mp_arrest_paired')
-				TaskPlayAnim(GetPlayerPed(-1), 'mp_arrest_paired', 'cop_p2_back_right', 8.0, -8, 3000, 2, 0, 0, 0, 0)
-                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerheading, playerlocation, playerCoords)
-				RemoveAnimDict('mp_arrest_paired')
+				local player = PlayerPedId()
+				local playerHeading = GetEntityHeading(player)
+				local playerLocation = GetEntityForwardVector(player)
+				local playerCoords = GetEntityCoords(player)
+				
+				local shouldStartAnimation = lib.callback.await('interactions:handcuff', false, GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerHeading, playerLocation, playerCoords)
+				if shouldStartAnimation then
+					loadanimdict('mp_arrest_paired')
+					TaskPlayAnim(player, 'mp_arrest_paired', 'cop_p2_back_right', 8.0, -8, 3000, 2, 0, 0, 0, 0)
+					ClearPedTasks(player)
+					RemoveAnimDict('mp_arrest_paired')
+				end
             end,
             icon = 'fa-solid fa-handcuffs',
             label = 'cuff',
@@ -276,14 +281,18 @@ local options = {
 		{
             name = 'uncaff',
             onSelect = function(data)
-				playerheading = GetEntityHeading(GetPlayerPed(-1))
-				playerlocation = GetEntityForwardVector(PlayerPedId(-1))
-				playerCoords = GetEntityCoords(GetPlayerPed(-1))
-				loadanimdict('mp_arresting')
-				TaskPlayAnim(GetPlayerPed(-1), 'mp_arresting', 'a_uncuff', 8.0, -8, 4500, 2, 0, 0, 0, 0)
-				ClearPedTasks(GetPlayerPed(-1))
-                TriggerServerEvent('interactions:handcuff', GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerheading, playerCoords, playerlocation)
-				RemoveAnimDict('mp_arrest_paired')
+				local player = PlayerPedId()
+				local playerHeading = GetEntityHeading(player)
+				local playerLocation = GetEntityForwardVector(player)
+				local playerCoords = GetEntityCoords(player)
+				
+				local shouldStartAnimation = lib.callback.await('interactions:handcuff', false, GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), playerHeading, playerLocation, playerCoords)
+                if shouldStartAnimation then 
+					loadanimdict('mp_arresting')
+					TaskPlayAnim(player, 'mp_arresting', 'a_uncuff', 8.0, -8, 4500, 2, 0, 0, 0, 0)
+					ClearPedTasks(player)
+					RemoveAnimDict('mp_arresting')
+				end
             end,
             icon = 'fa-solid fa-handcuffs',
             label = 'uncuff',
