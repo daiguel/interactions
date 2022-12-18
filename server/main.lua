@@ -32,3 +32,5 @@ RegisterNetEvent('interactions:OutVehicle')
 AddEventHandler('interactions:OutVehicle', function(target)
 	TriggerClientEvent('interactions:OutVehicle', target)
 end)
+
+lib.versionCheck('daiguel/interactions')

@@ -5,7 +5,7 @@ name "interactions"
 lua54        'yes'
 description "this resource is meant to automate all posssible interrracitons with players "
 author "daiguel"
-version "1.0.0"
+version "1.2.0"
 
 shared_scripts {
 	'@es_extended/imports.lua',

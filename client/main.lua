@@ -344,17 +344,16 @@ local vehicle_options = {
 	name = 'OutVehicle',
 	onSelect = function(data)
 		if ped_in_vehicle then
-			TriggerServerEvent('interactions:OutVehicle', NetworkGetPlayerIndexFromPed(GetPlayerServerId(ped_in_vehicle)))
+			TriggerServerEvent('interactions:OutVehicle', GetPlayerServerId(NetworkGetPlayerIndexFromPed(ped_in_vehicle)))
 		end
 	end,
 	icon = 'fa-solid fa-people-pulling',
 	label = 'drag out from vehicle',
 	canInteract = function(entity, distance, coords, name, bone)
 		ped_in_vehicle = isPlayerInVehi(entity)
+		local flag = false
 		if ped_in_vehicle then 
 			flag = IsPedCuffed(ped_in_vehicle)
-		else
-			flag = false
 		end
 		return flag and (not IsPedCuffed(PlayerPedId()))
 		
